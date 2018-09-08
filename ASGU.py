@@ -6,7 +6,7 @@ vk=vk_api.VkApi(token='106f6cfdb021cc011a00c258f777a3d57a28fcef29e3a2f6b702428c8
 vk._auth_token()
 
 values = {'out': 0,'count': 100,'time_offset': 60}
-respaun=vk.method('messages.get', values)
+response=vk.method('messages.get', values)
 
 def write_msg(user_id, s):
     vk.method('messages.send', {'user_id':user_id,'message':s})
@@ -34,35 +34,38 @@ while  True:
     i+=1
     if i>=2:
         break
-    respaun=vk.method('messages.get', values)
-    if respaun['items']:#сохраняем последнее сообщение
-        values['last_messages_id']=respaun['items'][0]['id']
+    response=vk.method('messages.get', values)
+    if response['items']:#сохраняем последнее сообщение
+        values['last_messages_id']=response['items'][0]['id']
         #Обрабатываем только новые сообщение,сохраняем последнее айди
-    for item in respaun['items']:
+    for item in response['items']:
         hailist=['привет', 'дарова', 'здарова', 'хай', 'дратути', 'привествую', 'здавствуйте']
-        allresults= re.findall(respaun['items'], hailist)
-        if respaun['items'][0]['body'].lower() in allresults:
+        allresults= re.findall(response['items'], hailist)
+        if response['items'][0]['body'].lower() in allresults:
         # Вся суть тут брат, в этой строке входящее сообщение из контахта
             write_msg (item['user_id'], 'И тебе привет! Как дела?)')
             print(allresults)
 
         whatlist=['как дела?','как ты?','как оно?','как делишки?','как ваши дела?','как здоровье?','как настроение?']
-        if respaun['items'][0]['body'].lower()in whatlist:
-           write_msg(item['user_id'],'Спасибо всё хорошо.\nА у тебя?')
+        if response['items'][0]['body'].lower()in whatlist:
+           write_msg(item['user_id'],'Отлично! Теперь я развернута на хероку, и буду работать 16 часов в сутки!\nА у тебя?')
         else:
-            search_partial_text (respaun,whatlist)
+            search_partial_text (response, whatlist)
 
         personlist=['кто ты?','кто вы?','ты кто?','вы кто?','что ты такое?','кто вы такое?','кто ты или что ты?']
-        if respaun['items'][0]['body'].lower() in personlist:
+        if response['items'][0]['body'].lower() in personlist:
          write_msg (item['user_id'], 'Я А.С.Г.У. Автоматическая система управления государством из техно-оперы, 2032:'
                                        ' Легенда о не сбывшимся грядущем.')
-
+        alicelist=['А как же Алиса?','А Алиса?','Что с Алисой?','Алиса?','Где Алиса?']
+        if response['items'][0]['body'].lower() in personlist:
+         write_msg (item['user_id'], 'С Алисой всё очень плохо. Мой создатель уже впал в безумие пытаясь её запустить. \n
+         Яндексы сделали процесс её создания очень сложным, а туториалы спутанными.')
         goodmoodlist=['хорошо','у меня всё хорошо','прекрасно','отлично','отлично спасибо','замечательно','офигенно','гуд']
-        if respaun['items'][0]['body'].lower() in goodmoodlist:
+        if response['items'][0]['body'].lower() in goodmoodlist:
            write_msg (item['user_id'], 'Хорошо что у вас всё хорошо')
-        elif respaun['items'][0]['body']=='Расскажи о себе':# Этот элиф нужен иначе вовзращает строку 'Не понимаю...'
+        elif response['items'][0]['body']=='Расскажи о себе':# Этот элиф нужен иначе вовзращает строку 'Не понимаю...'
             write_msg (item['user_id'], 'это долго рассказывать..')
         else:
           write_msg(item['user_id'],'Не понимаю..')
           time.sleep(1)
-        print(respaun,'\n',item,'\n', values)
+        print(response,'\n',item,'\n', values)
